@@ -5,3 +5,13 @@ distributed under the MIT License. It includes a module for the estimation of th
 kinetics from the results. Use at your own risk.
 
 
+Installation
+------------
+Simply download the code and leave it in your working directory. To generate the 
+extension from the pyx file simply run 
+
+    python setup.py build_ext --inplace
+
+This should result in a cossio.so file that you can then import.
+
+
