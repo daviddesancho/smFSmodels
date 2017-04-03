@@ -143,7 +143,7 @@ def dGqxdx(float q, float x, float barrier=5., float kl=0.):
     return barrier*df(x) + dVdx(q, x, kl)
 
 def delta_q_eff(float q, float x, float bDqdt, float sqrt2Dqdt, \
-        float rg, float kl=0.):
+        float rg, float kl):
     """
     Displacement in q
 
@@ -166,10 +166,10 @@ def delta_q_eff(float q, float x, float bDqdt, float sqrt2Dqdt, \
         sqrt(2*Dq*dt)
 
     """
-    return -bDqdt*dGqxdq(q,x,kl) + sqrt2Dqdt*rg
+    return -bDqdt*dGqxdq(q,x, kl) + sqrt2Dqdt*rg
 
-def delta_x_eff(float q, float x, \
-        float bDxdt, float sqrt2Dxdt, float rg, float kl=0.):
+def delta_x_eff(float q, float x, float barrier, \
+        float bDxdt, float sqrt2Dxdt, float rg, float kl):
     """
     Displacement in x
 
@@ -195,10 +195,10 @@ def delta_x_eff(float q, float x, \
         sqrt(2*Dx*dt)
 
     """
-    return -bDxdt*dGqxdx(q,x,kl) + sqrt2Dxdt*rg 
+    return -bDxdt*dGqxdx(q,x,barrier, kl) + sqrt2Dxdt*rg 
 
-def run_brownian(float x0=5., float q0=0., float Dx=0., float Dq=0.,\
-        float kl=0., float dt=1.e-3, int numsteps=100000):
+def run_brownian(float x0=5., float q0=0., float barrier=5., float Dx=0., float Dq=0.,\
+        float kl=0., float dt=1.e-3, int numsteps=100000, int fwrite=1):
     """
     Brownian dynamics runner for anisotropic diffusion model.
     Cossio, Hummer, Szabo, PNAS (2015)
@@ -211,6 +211,9 @@ def run_brownian(float x0=5., float q0=0., float Dx=0., float Dq=0.,\
     q0 : float
         Initial position on measuring coordinate.
 
+    barrier : float
+        Value of free energy barrier on molecular coordinate.
+    
     Dx : float
         Diffusion coefficient for molecule.
 
@@ -223,8 +226,12 @@ def run_brownian(float x0=5., float q0=0., float Dx=0., float Dq=0.,\
     dt : float
         Timestep for BD integraiton.
 
-    numsteps :int
+    numsteps : int
         Length of the run.
+
+    fwrite : int
+        Frequency of writing output.
+
     """
 
     cdef int k
@@ -245,10 +252,10 @@ def run_brownian(float x0=5., float q0=0., float Dx=0., float Dq=0.,\
     xk = [x]
     qk = [q]
     while True:
-        x += delta_x_eff(q, x, bDxdt, sqrt2Dxdt, rgaussx[k], kl)
-        q += delta_q_eff(q, x, bDqdt, sqrt2Dqdt, rgaussq[k], kl)
+        x += delta_x_eff(q, x, barrier,  bDxdt, sqrt2Dxdt, rgaussx[k], kl)
+        q += delta_q_eff(q, x,  bDqdt, sqrt2Dqdt, rgaussq[k], kl)
         k +=1
-        if k%100 == 0:
+        if k%fwrite == 0:
             xk.append(x)
             qk.append(q)
         if k == numsteps:
