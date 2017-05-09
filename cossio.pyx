@@ -249,15 +249,19 @@ def run_brownian(float x0=5., float q0=0., float barrier=5., float Dx=0., float 
     
     x, q = [x0, q0]
     k = 0
+    t = 0.
     xk = [x]
     qk = [q]
+    time = [0.]
     while True:
         x += delta_x_eff(q, x, barrier,  bDxdt, sqrt2Dxdt, rgaussx[k], kl)
         q += delta_q_eff(q, x,  bDqdt, sqrt2Dqdt, rgaussq[k], kl)
+        time += dt
         k +=1
         if k%fwrite == 0:
+            time.append(t)
             xk.append(x)
             qk.append(q)
         if k == numsteps:
             break
-    return xk, qk
+    return time, xk, qk
