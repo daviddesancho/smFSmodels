@@ -256,7 +256,7 @@ def run_brownian(float x0=5., float q0=0., float barrier=5., float Dx=0., float 
     while True:
         x += delta_x_eff(q, x, barrier,  bDxdt, sqrt2Dxdt, rgaussx[k], kl)
         q += delta_q_eff(q, x,  bDqdt, sqrt2Dqdt, rgaussq[k], kl)
-        time += dt
+        t += dt
         k +=1
         if k%fwrite == 0:
             time.append(t)
