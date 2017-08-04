@@ -197,8 +197,8 @@ def delta_x_eff(float q, float x, float barrier, \
     """
     return -bDxdt*dGqxdx(q,x,barrier, kl) + sqrt2Dxdt*rg 
 
-def run_brownian(float x0=5., float q0=0., float barrier=5., float Dx=0., float Dq=0.,\
-        float kl=0., float dt=1.e-3, int numsteps=100000, int fwrite=1):
+def run_brownian(float x0=5., float q0=0., float dt=5e-4, float barrier=5., \
+        float kl=0., float Dx=0., float Dq=0., int numsteps=100000, int fwrite=1):
     """
     Brownian dynamics runner for anisotropic diffusion model.
     Cossio, Hummer, Szabo, PNAS (2015)
@@ -234,34 +234,40 @@ def run_brownian(float x0=5., float q0=0., float barrier=5., float Dx=0., float 
 
     """
 
-    cdef int k
+    cdef int k, kk
     cdef float x, q
     cdef float sqrt2Dxdt, sqrt2Dqdt
     cdef float bDqdt, bDxdt    
-
+    
+    dt = 5.e-4
     bDqdt = beta*Dq*dt
     bDxdt = beta*Dx*dt
     sqrt2Dxdt = np.sqrt(2.*Dx*dt)
     sqrt2Dqdt = np.sqrt(2.*Dq*dt)
 
-    rgaussx = norm.rvs(size=numsteps, loc=0.0, scale=1.0)
-    rgaussq = norm.rvs(size=numsteps, loc=0.0, scale=1.0)
+    rgaussx = norm.rvs(size=fwrite, loc=0.0, scale=1.0)
+    rgaussq = norm.rvs(size=fwrite, loc=0.0, scale=1.0)
     
     x, q = [x0, q0]
     k = 0
+    kk = 0
     t = 0.
     xk = [x]
     qk = [q]
     time = [0.]
     while True:
-        x += delta_x_eff(q, x, barrier,  bDxdt, sqrt2Dxdt, rgaussx[k], kl)
-        q += delta_q_eff(q, x,  bDqdt, sqrt2Dqdt, rgaussq[k], kl)
+        x += delta_x_eff(q, x, barrier,  bDxdt, sqrt2Dxdt, rgaussx[kk], kl)
+        q += delta_q_eff(q, x,  bDqdt, sqrt2Dqdt, rgaussq[kk], kl)
         t += dt
         k +=1
+        kk +=1
         if k%fwrite == 0:
             time.append(t)
             xk.append(x)
             qk.append(q)
-        if k == numsteps:
-            break
+            rgaussx = norm.rvs(size=fwrite, loc=0.0, scale=1.0)
+            rgaussq = norm.rvs(size=fwrite, loc=0.0, scale=1.0)
+            kk = 0
+            if k >= numsteps:
+                break
     return time, xk, qk
