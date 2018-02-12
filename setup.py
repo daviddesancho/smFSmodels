@@ -7,10 +7,10 @@ from distutils.core import setup
 from Cython.Build import cythonize
 
 setup(
-        ext_modules = cythonize("*.pyx"),
+        ext_modules = cythonize("*/*.pyx"),
 )
 #setup(
-#            ext_modules = cythonize("cossio.pyx",
+#            ext_modules = cythonize("src/cossio.pyx",
 #                    compiler_directives={'profile': True})
 #            )
 
