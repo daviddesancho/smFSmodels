@@ -1,16 +1,25 @@
 #
 """
 Run using :
-    python setup.py build_ext --inplace
+    python setup.py build_ext --build-lib smfs
+
 """
-from distutils.core import setup
+from setuptools import setup, find_packages
+from setuptools.extension import Extension
 from Cython.Build import cythonize
 
-setup(
-        ext_modules = cythonize("*/*.pyx"),
-)
-#setup(
-#            ext_modules = cythonize("src/cossio.pyx",
-#                    compiler_directives={'profile': True})
-#            )
+extension = [Extension
+        ("smfs/cossio",
+            ["smfs/cossio.pyx"]
+    ),
+]
 
+setup(
+        name='smfs',
+        url='https://github.com/daviddesancho/smFS',
+        author='David De Sancho',
+        author_email='daviddesancho.at.gmail.com',
+        license='MIT',
+        packages=find_packages(),
+        ext_modules = cythonize(extension),
+)
