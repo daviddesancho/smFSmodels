@@ -8,11 +8,14 @@ from setuptools import setup, find_packages
 from setuptools.extension import Extension
 from Cython.Build import cythonize
 
-extension = [Extension
-        ("smfs/cossio",
-            ["smfs/cossio.pyx"]
-    ),
-]
+#extension = [Extension
+#        ("smfs/cossio",
+#            ["smfs/cossio.pyx"]
+#    ),
+#        ("smfs/cossio_ramp",
+#            ["smfs/cossio_ramp.pyx"]
+#    )
+#]
 
 setup(
         name='smfs',
@@ -21,5 +24,6 @@ setup(
         author_email='daviddesancho.at.gmail.com',
         license='MIT',
         packages=find_packages(),
-        ext_modules = cythonize(extension),
+#        ext_modules = cythonize(extension),
+        ext_modules = cythonize(["smfs/*.pyx"])
 )
