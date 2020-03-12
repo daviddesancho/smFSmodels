@@ -14,7 +14,7 @@ def calc_life(trajs, ub=5, lb=-5):
     try:
         assert ub > lb
     except AssertionError:
-        print " Upper bound is lower than lower bound"
+        print (" Upper bound is lower than lower bound")
         return
     
     lifeA = []
