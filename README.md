@@ -1,4 +1,4 @@
-# smFS 
+# smFSmodels 
 This module is an implementation of methods to analyze and interpret single molecule force 
 spectroscopy (smFS) data. It is largely based on the calculations reported by Cossio, Hummer
  and Szabo in [PNAS (2015)](http://dx.doi.org/10.1073/pnas.1519633112).
