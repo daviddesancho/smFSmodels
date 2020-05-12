@@ -11,7 +11,7 @@ Installation
 Simply download the code and leave it in your working directory. To generate the 
 extension from the `pyx` file simply run 
 
-     python setup.py build_ext --build-lib smfs
+     python setup.py build_ext --build-lib smfsmodels
 
 This should result in a cossio.so file that you can then import.
 
