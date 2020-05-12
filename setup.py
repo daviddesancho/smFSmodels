@@ -12,18 +12,11 @@ extension = [
             )
 ] 
 
-#,
-#        ("smfs/cossio_ramp",
-#            ["smfs/cossio_ramp.pyx"]
-#    )
-#]
-
 setup(
         name='smfs',
         url='https://github.com/daviddesancho/smFSmodels',
         author='David De Sancho',
         author_email='daviddesancho.at.gmail.com',
         license='MIT',
-#        ext_modules = cythonize(extension)
         ext_modules = cythonize(["smfsmodels/*.pyx"])
 )
