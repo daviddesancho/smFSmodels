@@ -1,14 +1,14 @@
 #
 """
 Run using :
-    python setup.py build_ext --build-lib smfs
+    python setup.py build_ext --build-lib smfsmodels
 """
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Build import cythonize
 
 extension = [
-        Extension("smfs/cossio", ["smfs/cossio.pyx"]
+        Extension("smfsmodels/cossio", ["smfsmodels/cossio.pyx"]
             )
 ] 
 
@@ -20,10 +20,10 @@ extension = [
 
 setup(
         name='smfs',
-        url='https://github.com/daviddesancho/smFS',
+        url='https://github.com/daviddesancho/smFSmodels',
         author='David De Sancho',
         author_email='daviddesancho.at.gmail.com',
         license='MIT',
 #        ext_modules = cythonize(extension)
-        ext_modules = cythonize(["smfs/*.pyx"])
+        ext_modules = cythonize(["smfsmodels/*.pyx"])
 )
