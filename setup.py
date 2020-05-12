@@ -2,16 +2,17 @@
 """
 Run using :
     python setup.py build_ext --build-lib smfs
-
 """
-from setuptools import setup, find_packages
-from setuptools.extension import Extension
+from distutils.core import setup
+from distutils.extension import Extension
 from Cython.Build import cythonize
 
-#extension = [Extension
-#        ("smfs/cossio",
-#            ["smfs/cossio.pyx"]
-#    ),
+extension = [
+        Extension("smfs/cossio", ["smfs/cossio.pyx"]
+            )
+] 
+
+#,
 #        ("smfs/cossio_ramp",
 #            ["smfs/cossio_ramp.pyx"]
 #    )
@@ -23,7 +24,6 @@ setup(
         author='David De Sancho',
         author_email='daviddesancho.at.gmail.com',
         license='MIT',
-        packages=find_packages(),
-#        ext_modules = cythonize(extension),
+#        ext_modules = cythonize(extension)
         ext_modules = cythonize(["smfs/*.pyx"])
 )
