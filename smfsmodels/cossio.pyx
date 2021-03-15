@@ -160,8 +160,8 @@ def dGqxdx(float q, float x, float barrier=5., float F12=-1, float kl=0.):
     """
     return barrier*df(x) + dVdx(q, x, kl) + F12
 
-def delta_q_eff(float q, float x, float ks, float v, float t, float bDqdt, float sqrt2Dqdt, \
-        float rg, float kl):
+def delta_q_eff(float q, float x, float ks, float v, float t, \
+        float bDqdt, float sqrt2Dqdt, float rg, float kl):
     """
     Displacement in q
 
@@ -219,8 +219,8 @@ def delta_x_eff(float q, float x, float barrier, float F12, \
     return -bDxdt*dGqxdx(q, x, barrier, F12, kl) + sqrt2Dxdt*rg 
 
 def run_brownian(float x0=5., float q0=0., float dt=5e-4, float barrier=5., \
-         float F12=1, float kl=0., float ks=0., float v=0., float Dx=0., float Dq=0., \
-         int numsteps=100000, int fwrite=1):
+         float Dx=0, float Dq=0., float F12=0, float kl=0., float ks=0, \
+         float v=0, int numsteps=1000000, int fwrite=1):
     """
     Brownian dynamics runner for anisotropic diffusion model.
     Cossio, Hummer, Szabo, PNAS (2015)
@@ -284,8 +284,10 @@ def run_brownian(float x0=5., float q0=0., float dt=5e-4, float barrier=5., \
     qk = [q]
     time = [0.]
     while True:
-        x += delta_x_eff(q, x, barrier, F12, bDxdt, sqrt2Dxdt, rgaussx[kk], kl)
-        q += delta_q_eff(q, x, ks, v, t, bDqdt, sqrt2Dqdt, rgaussq[kk], kl)
+        x += delta_x_eff(q, x, barrier, F12, bDxdt, sqrt2Dxdt, \
+                rgaussx[kk], kl)
+        q += delta_q_eff(q, x, ks, v, t, bDqdt, sqrt2Dqdt, \
+                rgaussq[kk], kl)
         t += dt
         k +=1
         kk +=1

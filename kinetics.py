@@ -1,4 +1,5 @@
 import numpy as np
+
 def calc_life(trajs, ub=5, lb=-5):
     """
     Identifies transition paths and returns lifetimes of states.
@@ -85,7 +86,7 @@ def calc_life_multi(trajs, bounds=[[-3,-1], [1,3], [6,8]]):
 
     return life, tau
 
-def lifetimes(data, f_bound=0, u_bound=10):
+def lifetimes(data, f_bound=-5, u_bound=5):
     """
     Estimates lifetimes using a transition path analysis. Transitions are
     only assigned from one state to the other when the core of the other
