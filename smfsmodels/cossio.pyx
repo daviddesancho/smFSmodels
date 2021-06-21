@@ -12,10 +12,8 @@ def Gx(float x, float barrier=5., float F12=0):
 
     x : float
         Value of molecular coordinate x.
-
     barrier : float
         Value of free energy barrier on molecular coordinate.
-    
     F12 : float
         Midpoint force value to subtract from free energy.
 
@@ -28,10 +26,8 @@ def V(float q, float x, float kl=0.):
 
     q : float
         Value of measured coordinate q.
-
     x : float
         Value of molecular coordinate x.
-
     kl : float
         Spring constant of harmonic potential.
 
@@ -44,16 +40,12 @@ def Gqx(float q, float x, float barrier=5.0, float F12=0, float kl=0.):
 
     q : float
         Value of measured coordinate q.
-
     x : float
         Value of molecular coordinate x.
-
     barrier : float
         Value of free energy barrier on molecular coordinate.
-    
     F12 : float
         Midpoint force value to subtract from free energy.
-
     kl : float
         Spring constant of harmonic potential.
 
@@ -167,19 +159,14 @@ def delta_q_eff(float q, float x, float ks, float v, float t, \
 
     q : float
         Value of measured coordinate q.
-
     x : float
         Value of molecular coordinate x.
-
     kl : float
         Spring constant of harmonic potential.
-
     rg : float
         Normally distributed random number.
-
     bDxDt : float
         beta*Dx*dt
-
     sqrt2Dqdt : float
         sqrt(2*Dq*dt)
 
@@ -193,25 +180,18 @@ def delta_x_eff(float q, float x, float barrier, float F12, \
 
     q : float
         Value of measured coordinate q.
-
     x : float
         Value of molecular coordinate x.
-
     barrier : float
         Value of free energy barrier on molecular coordinate.
-    
     F12 : float
         Midpoint force value to subtract from free energy.
-
     kl : float
         Spring constant of harmonic potential.
-
     rg : float
         Normally distributed random number.
-
     bDxdt : float
         beta*Dx*dt
-
     sqrt2Dxdt : float
         sqrt(2*Dx*dt)
 
@@ -229,34 +209,26 @@ def run_brownian(float x0=5., float q0=0., float dt=5e-4, float barrier=5., \
     ----------
     x0 : float
         Initial position on molecular coordinate.
-
     q0 : float
         Initial position on measuring coordinate.
-
     barrier : float
         Value of free energy barrier on molecular coordinate.
-    
     Dx : float
         Diffusion coefficient for molecule.
-
     Dq : float
         Diffusion coefficient for instrument.
-
+    F12 : float
+        Force bias from midpoint. 
     kl : float
         Spring constant of the instrument.
-
     ks : float
         Spring constant of trap.
-
     v : float
         Pulling speed.
-
     dt : float
         Timestep for BD integraiton.
-
     numsteps : int
         Length of the run.
-
     fwrite : int
         Frequency of writing output.
 
@@ -298,6 +270,85 @@ def run_brownian(float x0=5., float q0=0., float dt=5e-4, float barrier=5., \
             rgaussx = norm.rvs(size=fwrite, loc=0.0, scale=1.0)
             rgaussq = norm.rvs(size=fwrite, loc=0.0, scale=1.0)
             kk = 0
-            if k >= numsteps:
-                break
+        if k >= numsteps:
+            break
     return time, xk, qk
+
+def run_brownian_ramp(float x0=5., float q0=0., float dt=5e-4, \
+        float barrier=5., float Dx=0, float Dq=0., float F12=-1, \
+        float kl=0., float ks=0, float v=0, int numsteps=1000000, \
+        int fwrite=1):
+    """
+    Brownian dynamics runner for anisotropic diffusion model.
+    Cossio, Hummer, Szabo, PNAS (2015)
+
+    Parameters
+    ----------
+    x0 : float
+        Initial position on molecular coordinate.
+    q0 : float
+        Initial position on measuring coordinate.
+    barrier : float
+        Value of free energy barrier on molecular coordinate.
+    Dx : float
+        Diffusion coefficient for molecule.
+    Dq : float
+        Diffusion coefficient for instrument.
+    F12 : float
+        Initial biasing force. Force will range between F12 and -F12
+    kl : float
+        Spring constant of the instrument.
+    ks : float
+        Spring constant of trap.
+    v : float
+        Pulling speed.
+    dt : float
+        Timestep for BD integraiton.
+    numsteps : int
+        Length of the run.
+    fwrite : int
+        Frequency of writing output.
+
+    """
+
+    cdef int k, kk
+    cdef float x, q, force
+    cdef float sqrt2Dxdt, sqrt2Dqdt
+    cdef float bDqdt, bDxdt    
+    
+    dt = 5.e-4
+    bDqdt = beta*Dq*dt
+    bDxdt = beta*Dx*dt
+    sqrt2Dxdt = np.sqrt(2.*Dx*dt)
+    sqrt2Dqdt = np.sqrt(2.*Dq*dt)
+
+    rgaussx = norm.rvs(size=fwrite, loc=0.0, scale=1.0)
+    rgaussq = norm.rvs(size=fwrite, loc=0.0, scale=1.0)
+    
+    x, q = [x0, q0]
+    k = 0
+    kk = 0
+    t = 0.
+    xk = [x]
+    qk = [q]
+    fcum = [F12]
+    time = [0.]
+    while True:
+        force = F12*(1. - 2.*float(k)/numsteps)
+        x += delta_x_eff(q, x, barrier, force, bDxdt, sqrt2Dxdt, \
+                rgaussx[kk], kl)
+        q += delta_q_eff(q, x, ks, v, t, bDqdt, sqrt2Dqdt, \
+                rgaussq[kk], kl)
+        t += dt
+        k +=1
+        kk +=1
+        if k%fwrite == 0:
+            fcum.append(force)
+            time.append(t)
+            xk.append(x)
+            qk.append(q)
+            rgaussx = norm.rvs(size=fwrite, loc=0.0, scale=1.0)
+            rgaussq = norm.rvs(size=fwrite, loc=0.0, scale=1.0)
+            kk = 0
+        if k >= numsteps:
+            return time, fcum, xk, qk
