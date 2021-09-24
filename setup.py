@@ -21,7 +21,6 @@ setup(
         author='David De Sancho',
         author_email='daviddesancho.at.gmail.com',
         license='MIT',
-#        ext_modules = cythonize(["smfsmodels/cossio.pyx", "smfsmodels/schutte.pyx"])
         ext_modules = cythonize(["smfsmodels/*.pyx"], \
                 compiler_directives={'language_level' : sys.version_info[0]})
 )
